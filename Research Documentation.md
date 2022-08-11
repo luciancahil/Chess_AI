@@ -4,9 +4,9 @@
 
 ## Data Gathering
 
-To train our Convolutional Neural Network, we many games. The MINST dataset for hand drawn digits uses 60 000 data examples for 10 possible outputs, and thus, to keep that ratio of examples to possible outcomes, we need 230 000 chess positions.
+To train our Convolutional Neural Network, we many games. The MINST dataset for hand drawn digits uses 60 000 data examples for 10 possible outputs, and thus, to keep that ratio of examples to possible outcomes, we need 1 380 000 chess positions.
 
-The average chess game lasts 40 moves. Since each "move" involves both players making a "ply", and thus 2 distinct positions, the average chess game represents 80 positions. As such, we will require about 2 900 games. Now, we may end up with many repeats, but that is a problem that can hopefully be fixed by playing each game out to mate using chess engines, and adding those positions to the dataset.
+The average chess game lasts 40 moves. Since each "move" involves both players making a "ply", and thus 2 distinct positions, the average chess game represents 80 positions. As such, we will require about 17 250 games. Now, we may end up with many repeats, but that is a problem that can hopefully be fixed by playing each game out to mate using chess engines, and adding those positions to the dataset.
 
 To gather a large amount of chess games, we used the [ficsgames database](https://www.ficsgames.org/download.html). To start off, we downloaded all games from January 2022 played in standard time controls, where average player rating was above 2000.
 
@@ -62,3 +62,8 @@ Unfortunately, we don't know how many games we have, and won't until we clean th
 
 All Data Parsing is done in Java, and all code related to data parsing can be found in the folder "Data Cleaning".
 
+Cleaning this data ended up being very fast and efficient. Simply ignore all lines that don't begin with the character '1', and then ignore everything in that line after the character '{'. 
+
+As it turns out, there were 2 223 games, or just over 10 % of what we need. Thus, we will download more games, and clean their data as well.
+
+We started with removing the rating requirement, and downloading all standard chess games. As it turns out, this dataset had more than twice as large as we needed, so we hardcoded a lines limit. Now, we have 1750 games, and can now add to this data in order to create a dataset that a neural network can use. 
