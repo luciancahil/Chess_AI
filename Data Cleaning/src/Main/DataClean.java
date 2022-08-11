@@ -3,18 +3,19 @@ package Main;
 import java.io.*;
 
 public class DataClean {
+    static int limit = 17250;
+    static int lines = 0;
 
     public static void main(String[] args) {
         BufferedReader reader;
-        String outputPath = "OutputGames.pgn";
+        String outputPath = "Data/OutputGames.pgn";
 
         try {
-            reader = new BufferedReader(new FileReader(
-                    "Data/ficsgamesdb_202201_standard2000_nomovetimes_259055.pgn"));
+            reader = new BufferedReader(new FileReader("Data/InputGames.pgn"));
             String line = reader.readLine();
-            while (line != null) {
+            while ( lines < limit && line != null) {
+                // read next lint
                 writeFile(outputPath, line);
-                // read next line
                 line = reader.readLine();
             }
             reader.close();
@@ -33,6 +34,7 @@ public class DataClean {
             return;
         }
 
+        lines++;
         String addedLine = line.substring(0, line.lastIndexOf('{'));
 
 
