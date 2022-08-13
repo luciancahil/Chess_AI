@@ -1,6 +1,7 @@
 import chess
 
 import chess.engine
+import re
 
 import os
 cwd = os.getcwd()
@@ -35,4 +36,23 @@ def getInputArray(board):
     
     return array
 
-print(str(chessBoard))
+
+
+def gamesToMovesArray(gamePGN):
+    # Turn all games into an array of moves.
+    moves = re.split("  *|[0-9]*[.]", game)
+    moves = list(filter(None, moves))
+
+
+games = open("Data Converting\\Data\\InputGames.pgn", "r")
+
+game = games.readline()
+
+
+
+
+
+print(moves)
+
+
+
