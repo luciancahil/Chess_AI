@@ -66,7 +66,7 @@ Cleaning this data ended up being very fast and efficient. Simply ignore all lin
 
 As it turns out, there were 2 223 games, or just over 10 % of what we need. Thus, we will download more games, and clean their data as well.
 
-We started with removing the rating requirement, and downloading all standard chess games. As it turns out, this dataset had more than twice as large as we needed, so we hardcoded a lines limit. Now, we have 1750 games, and can now add to this data in order to create a dataset that a neural network can use. 
+We started with removing the rating requirement, and downloading all standard chess games. As it turns out, this dataset had more than twice as large as we needed, so we hardcoded a lines limit. Now, we have 17 250 games, and can now add to this data in order to create a dataset that a neural network can use. 
 
 ## Data Conversion
 

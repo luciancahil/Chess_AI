@@ -2,18 +2,14 @@ import chess
 
 import chess.engine
 import re
+import asyncio
 
 import os
 cwd = os.getcwd()
-
-
 path = cwd + "\\Data Converting\\Data\\stockfish_15_win_x64_avx2\\stockfish_15_win_x64_avx2\\stockfish_15_x64_avx2.exe"
-
-
-
 engine = chess.engine.SimpleEngine.popen_uci(path)
 
-engine.quit()
+
 chessBoard = chess.Board()
 
 
@@ -48,8 +44,28 @@ def gamesToMovesArray(gamePGN):
     return moves
 
 
+
+
+
 games = open("Data Converting\\Data\\InputGames.pgn", "r")
 
 game = games.readline()
 
-print(gamesToMovesArray(game))
+
+
+
+moves = gamesToMovesArray(game)
+
+for move in moves:
+    chessBoard.push_san(move)
+
+
+
+
+print(chessBoard)
+
+info = engine.analyse(chessBoard, chess.engine.Limit(time=0.01, depth=20))
+
+print(info['score'].white())
+
+engine.quit()
