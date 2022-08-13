@@ -56,8 +56,34 @@ def gamesToMovesArray(gamePGN):
 
 
 
-# TODO: Check if mate soon. If not, check if score is > +/- 5
-# Then, write out the new game. 
+# TODO: Make eval into label function, then add all at once.
+
+
+# Takes an eval string, and outputs the neural network equivalent
+def evalToLabel(evalString):
+    if(evalString.charAt(0) == '#'): # we have a forced mate
+        mateIn = int(evalString[1:])
+
+        if(mateIn < 0):
+            return abs(mateIn)  # black has a forced mate in abs(mateIn) moves
+        else:
+            return 229 - mateIn # white has a forced mate in 229 - mateIn moves
+
+        
+
+
+
+    num = int(evalString)
+
+    # any evaluation higher than 10 gets limited by the range of the neural network. 
+    if(abs(num) >= 10):
+        if(num > 0):
+            return 10
+        else:
+            return -10
+    
+
+    return 10 * num + 215
 
 
 
@@ -70,11 +96,13 @@ def finish(gamePGN):
     for move in moves:
         board.push_san(move)
     
+    print(board)
 
     info = engine.analyse(board, chess.engine.Limit(time=0.01, depth=20))
 
 
     eval = str(info['score'].white())
+    print(eval)
 
 
 
@@ -96,8 +124,11 @@ def finish(gamePGN):
 
 games = open("Data Converting\\Data\\InputGames.pgn", "r")
 
+game = games.readline()
 
+game = "e4 e5 Qh5 Nc6 Bc4 Nf6 \n"
 
-print(finish(game))
-    
+print(game)
+
+print(finish(game))    
 engine.quit()
