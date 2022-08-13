@@ -1,6 +1,21 @@
 import chess
 
+import chess.engine
+
+import os
+cwd = os.getcwd()
+
+
+path = cwd + "\\Data Converting\\Data\\stockfish_15_win_x64_avx2\\stockfish_15_win_x64_avx2\\stockfish_15_x64_avx2.exe"
+
+
+
+engine = chess.engine.SimpleEngine.popen_uci(path)
+
+engine.quit()
 chessBoard = chess.Board()
+
+
 
 def getBoardString(board):
     boardString = str(board)
@@ -20,5 +35,4 @@ def getInputArray(board):
     
     return array
 
-
-print(getInputArray(chessBoard))
+print(str(chessBoard))
