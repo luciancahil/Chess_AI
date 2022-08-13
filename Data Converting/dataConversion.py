@@ -47,25 +47,57 @@ def gamesToMovesArray(gamePGN):
 
 
 
+
+
+
+
+
+
+
+
+
+# TODO: Check if mate soon. If not, check if score is > +/- 5
+# Then, write out the new game. 
+
+
+
+def finish(gamePGN):
+    moves = gamesToMovesArray(gamePGN)
+    board = chess.Board()
+
+
+
+    for move in moves:
+        board.push_san(move)
+    
+
+    info = engine.analyse(board, chess.engine.Limit(time=0.01, depth=20))
+
+
+    eval = str(info['score'].white())
+
+
+
+    if(eval[0] != '#' and abs(int(eval)) < 500): ## no forced mate and eval < 500 centipawns
+        return moves
+    
+    
+    while not board.is_game_over():
+        result = engine.play(board, chess.engine.Limit(time=0.1))
+        producesan = board.san(result.move)
+        board.push(result.move)
+        moves.append(producesan)
+
+
+    return moves
+
+
+
+
 games = open("Data Converting\\Data\\InputGames.pgn", "r")
 
-game = games.readline()
 
 
-
-
-moves = gamesToMovesArray(game)
-
-for move in moves:
-    chessBoard.push_san(move)
-
-
-
-
-print(chessBoard)
-
-info = engine.analyse(chessBoard, chess.engine.Limit(time=0.01, depth=20))
-
-print(info['score'].white())
-
+print(finish(game))
+    
 engine.quit()
