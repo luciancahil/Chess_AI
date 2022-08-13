@@ -142,5 +142,7 @@ game = games.readline()
 
 print(game)
 
+f = open("Data Converting\\Data\\OutputGames.pgn", "w")
+f.write(finish(game))
 print(finish(game))    
 engine.quit()
