@@ -60,8 +60,9 @@ def gamesToMovesArray(gamePGN):
 
 
 # Takes an eval string, and outputs the neural network equivalent
+# Will not work for positions where either side has been checkmated
 def evalToLabel(evalString):
-    if(evalString.charAt(0) == '#'): # we have a forced mate
+    if(evalString[0] == '#'): # we have a forced mate
         mateIn = int(evalString[1:])
 
         if(mateIn < 0):
@@ -73,60 +74,71 @@ def evalToLabel(evalString):
 
 
 
-    num = int(evalString)
+    num = int(evalString) / 100
 
     # any evaluation higher than 10 gets limited by the range of the neural network. 
     if(abs(num) >= 10):
         if(num > 0):
-            return 10
+            return 214
         else:
-            return -10
+            return 15
     
 
-    return 10 * num + 215
+    return int(10 * num + 215)
 
 
 
 def finish(gamePGN):
     moves = gamesToMovesArray(gamePGN)
     board = chess.Board()
+    movesandEval = ""
 
 
 
     for move in moves:
         board.push_san(move)
+        info = engine.analyse(board, chess.engine.Limit(time=0.01, depth=20))
+        eval = str(info['score'].white())
+        nextPart = move + ";" + str(evalToLabel(eval)) + ":"
+        movesandEval += nextPart
     
-    print(board)
 
     info = engine.analyse(board, chess.engine.Limit(time=0.01, depth=20))
 
-
-    eval = str(info['score'].white())
-    print(eval)
-
-
-
     if(eval[0] != '#' and abs(int(eval)) < 500): ## no forced mate and eval < 500 centipawns
-        return moves
+        return movesandEval
     
+
     
     while not board.is_game_over():
         result = engine.play(board, chess.engine.Limit(time=0.1))
+        info = engine.analyse(board, chess.engine.Limit(time=0.01, depth=20))
         producesan = board.san(result.move)
         board.push(result.move)
-        moves.append(producesan)
+
+        
+        nextEval = str(evalToLabel(eval))
+
+        # check for  adelivered mate
+        if(board.outcome() != None):
+            if(board.outcome().winner): #white won
+                nextEval = "229"
+            else: # black won
+                nextEval = "0"
+
+        nextPart = producesan + ";" + nextEval + ":"
+        movesandEval += nextPart
 
 
-    return moves
+    return movesandEval
 
 
-
+#Outcome(termination=<Termination.CHECKMATE: 1>, winner=True)
 
 games = open("Data Converting\\Data\\InputGames.pgn", "r")
 
 game = games.readline()
 
-game = "e4 e5 Qh5 Nc6 Bc4 Nf6 \n"
 
 print(game)
 
