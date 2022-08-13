@@ -39,20 +39,17 @@ def getInputArray(board):
 
 
 def gamesToMovesArray(gamePGN):
-    # Turn all games into an array of moves.
+    # Turnss a pgn string into an array of moves
     moves = re.split("  *|[0-9]*[.]", game)
     moves = list(filter(None, moves))
+
+    # remove the '\n' at the end
+    moves.pop()
+    return moves
 
 
 games = open("Data Converting\\Data\\InputGames.pgn", "r")
 
 game = games.readline()
 
-
-
-
-
-print(moves)
-
-
-
+print(gamesToMovesArray(game))
