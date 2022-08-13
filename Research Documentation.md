@@ -67,3 +67,9 @@ Cleaning this data ended up being very fast and efficient. Simply ignore all lin
 As it turns out, there were 2 223 games, or just over 10 % of what we need. Thus, we will download more games, and clean their data as well.
 
 We started with removing the rating requirement, and downloading all standard chess games. As it turns out, this dataset had more than twice as large as we needed, so we hardcoded a lines limit. Now, we have 1750 games, and can now add to this data in order to create a dataset that a neural network can use. 
+
+## Data Conversion
+
+The goal of this section is to assign various positions a "rating", in a format I can easily feed into a neural network.
+
+The first thing I need to do is to finish any game that is close to finishing. Arbitrarily, if the absolute value of the evaluation is more than 5, then the position will be played out until mate. This is to provide the engine with experience in mating. 
