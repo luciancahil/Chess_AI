@@ -137,12 +137,21 @@ def finish(gamePGN):
 
 games = open("Data Converting\\Data\\InputGames.pgn", "r")
 
-game = games.readline()
+gameLines = games.readlines()
 
 
-print(game)
 
 f = open("Data Converting\\Data\\OutputGames.pgn", "w")
-f.write(finish(game))
-print(finish(game))    
+num = 0
+
+for game in gameLines:
+    line = finish(game) + "\n"
+    f.write(line)
+    num += 1
+    if(num % 10 == 0):
+        printing = "At "  + str(num)
+        print(printing)
+
+f.close()
+games.close()
 engine.quit()
