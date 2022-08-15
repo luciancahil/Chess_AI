@@ -135,9 +135,6 @@ for game in gameLines:
     if(num % 10 == 0):
         printing = "At "  + str(num)
         print(printing)
-    
-    if(num == 100):
-        break
 
 f.close()
 games.close()
