@@ -68,7 +68,7 @@ def evalToLabel(evalString):
             return 15
     
 
-    return int(10 * num + 215)
+    return int(10 * num + 115)
 
 
 
@@ -135,6 +135,9 @@ for game in gameLines:
     if(num % 10 == 0):
         printing = "At "  + str(num)
         print(printing)
+    
+    if(num == 100):
+        break
 
 f.close()
 games.close()

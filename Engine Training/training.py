@@ -44,14 +44,15 @@ def getInputArray(board):
     return array
 
 
-"""
+
 
 games = open("Engine Training\\Data\\InputGames.pgn", "r")
 
 gameLines = games.readlines()
 
+print("done Reading")
 
-numGames = len(gameLines)
+numGames = 100
 numTrainGames = 0.8 * numGames
 gamesProcessed = 0
 trainInputs = []
@@ -61,34 +62,38 @@ testOutputs = []
 
 
 for gameLine in gameLines:
-    if(gamesProcessed >= 10):
+    if(gamesProcessed % 100 == 0):
+        printStr = "Processed " + str(gamesProcessed)
+        print(printStr)
+    
+    if(gamesProcessed == 100):
         break
 
     plyLabelPairs = gameLine.split(":") # split the string into move-ply pairs
-
     plyLabelPairs.pop() # remove the newline character
-
     chessBoard = chess.Board() #create a new chessboard in the starting position.
 
     for pair in plyLabelPairs:
         #Split the ply and label
         splitArr = pair.split(";")
         ply = splitArr[0]
-        label = splitArr[1]
+        label = int(splitArr[1])
+
+        # there was an error in creating data, where 215 was set as 0 centipawns instaed of 115
+        # to fix it, subtract 100 from all non-mating and non-mating and non-fixed evaluations
+
         chessBoard.push_san(ply)
         if(gamesProcessed <= numTrainGames):
             trainInputs.append(getInputArray(chessBoard))
-            trainOutputs.append(int(label))
+            trainOutputs.append(label)  # error with setting the 0 value at 215 rather than 115. Subtract 100 to fis
         else:
             testInputs.append(getInputArray(chessBoard))
-            testOutputs.append(int(label))
+            testOutputs.append(label)
     
     gamesProcessed += 1
 
 train_dataset = TensorDataset(torch.tensor(trainInputs), torch.tensor(trainOutputs))
 test_dataset = TensorDataset(torch.tensor(testInputs), torch.tensor(testOutputs))
-
-"""
 
 
 # Hyper-parameters 
@@ -98,6 +103,15 @@ num_classes = 230
 num_epochs = 2 # number of times we go through data
 batch_size = 100
 learning_rate = 0.001
+
+# Data loader
+train_loader = torch.utils.data.DataLoader(dataset=train_dataset, 
+                                           batch_size=batch_size, 
+                                           shuffle=True)
+
+test_loader = torch.utils.data.DataLoader(dataset=test_dataset, 
+                                          batch_size=batch_size, 
+                                          shuffle=False)
 
 
 # Fully connected neural network with one hidden layer
@@ -129,3 +143,44 @@ model = NeuralNet(input_size, hidden_size, num_classes).to(device)
 # Loss and optimizer
 criterion = nn.CrossEntropyLoss()
 optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)  
+
+
+# Train the model
+n_total_steps = len(train_loader)
+for epoch in range(num_epochs):
+    for i, (images, labels) in enumerate(train_loader):  
+        # origin shape: [100, 1, 28, 28]
+        # resized: [100, 784]
+        images = images.to(device)
+        labels = labels.to(device)
+        
+        # Forward pass
+        outputs = model(images)
+        loss = criterion(outputs, labels)
+        
+        # Backward and optimize
+        optimizer.zero_grad()
+        loss.backward()
+        optimizer.step()
+
+        if (i+1) % 100 == 0:
+            print (f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
+
+
+
+# Test the model
+# In test phase, we don't need to compute gradients (for memory efficiency)
+with torch.no_grad():
+    n_correct = 0
+    n_samples = 0
+    for images, labels in test_loader:
+        images = images.to(device)
+        labels = labels.to(device)
+        outputs = model(images)
+        # max returns (value ,index)
+        _, predicted = torch.max(outputs.data, 1)
+        n_samples += labels.size(0)
+        n_correct += (predicted == labels).sum().item()
+
+    acc = 100.0 * n_correct / n_samples
+    print(f'Accuracy of the network on the test images: {acc} %')
