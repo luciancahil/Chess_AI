@@ -184,3 +184,12 @@ with torch.no_grad():
 
     acc = 100.0 * n_correct / n_samples
     print(f'Accuracy of the network on the test images: {acc} %')
+
+
+f = open("Engine Training\\Data\\Parameters.txt", "w")
+num = 0
+
+for name, param in model.named_parameters():
+    if param.requires_grad:
+        printStr = name + ", " + str(param.data) + "\n"
+        f.write(printStr)
