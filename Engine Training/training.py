@@ -50,24 +50,40 @@ games = open("Engine Training\\Data\\InputGames.pgn", "r")
 
 gameLines = games.readlines()
 
-gameLine = gameLines[0]
 
-plyLabelPairs = gameLine.split(":") # split the string into move-ply pairs
+numGames = len(gameLines)
+numTrainGames = 0.8 * numGames
+gamesProcessed = 0
+trainInputs = []
+trainOutputs = []
+testInputs = []
+testOutputs = []
 
-plyLabelPairs.pop() # remove the newline character
 
-chessBoard = chess.Board()
+for gameLine in gameLines:
+    if(gamesProcessed >= 10):
+        break
 
-allInputs = []
-allOutputs = []
+    plyLabelPairs = gameLine.split(":") # split the string into move-ply pairs
 
-print(plyLabelPairs)
+    plyLabelPairs.pop() # remove the newline character
 
-for pair in plyLabelPairs:
-    #Split the ply and label
-    splitArr = pair.split(";")
-    ply = splitArr[0]
-    label = splitArr[1]
-    chessBoard.push_san(ply)
-    allInputs.append(getInputArray(chessBoard))
-    allOutputs.append(label)
+    chessBoard = chess.Board() #create a new chessboard in the starting position.
+
+    for pair in plyLabelPairs:
+        #Split the ply and label
+        splitArr = pair.split(";")
+        ply = splitArr[0]
+        label = splitArr[1]
+        chessBoard.push_san(ply)
+        if(gamesProcessed <= numTrainGames):
+            trainInputs.append(getInputArray(chessBoard))
+            trainOutputs.append(int(label))
+        else:
+            testInputs.append(getInputArray(chessBoard))
+            testOutputs.append(int(label))
+    
+    gamesProcessed += 1
+
+train_dataset = TensorDataset(torch.tensor(trainInputs), torch.tensor(trainOutputs))
+test_dataset = TensorDataset(torch.tensor(testInputs), torch.tensor(testOutputs))
