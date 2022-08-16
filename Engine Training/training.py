@@ -52,7 +52,7 @@ gameLines = games.readlines()
 
 print("done Reading")
 
-numGames = 100
+numGames = len(gameLines)
 numTrainGames = 0.8 * numGames
 gamesProcessed = 0
 trainInputs = []
@@ -65,9 +65,6 @@ for gameLine in gameLines:
     if(gamesProcessed % 100 == 0):
         printStr = "Processed " + str(gamesProcessed)
         print(printStr)
-    
-    if(gamesProcessed == 100):
-        break
 
     plyLabelPairs = gameLine.split(":") # split the string into move-ply pairs
     plyLabelPairs.pop() # remove the newline character
@@ -91,6 +88,7 @@ for gameLine in gameLines:
             testOutputs.append(label)
     
     gamesProcessed += 1
+print("Done Processing")
 
 train_dataset = TensorDataset(torch.tensor(trainInputs), torch.tensor(trainOutputs))
 test_dataset = TensorDataset(torch.tensor(testInputs), torch.tensor(testOutputs))
@@ -100,7 +98,7 @@ test_dataset = TensorDataset(torch.tensor(testInputs), torch.tensor(testOutputs)
 input_size = 64 # number of squares
 hidden_size = 200 # number of pixels in hidden layer
 num_classes = 230 
-num_epochs = 2 # number of times we go through data
+num_epochs = 20 # number of times we go through data
 batch_size = 100
 learning_rate = 0.001
 
@@ -123,6 +121,7 @@ class NeuralNet(nn.Module):
         self.relu = nn.ReLU() # relu function
         self.l2 = nn.Linear(hidden_size, hidden_size) # connects the first hidden layer to the second
         self.l3 = nn.Linear(hidden_size, num_classes) # connects the second hidden layer to the output layer
+        self.softMax = nn.Softmax()
 
 
     def forward(self, x):
@@ -131,6 +130,7 @@ class NeuralNet(nn.Module):
         out = self.l2(out) # runs relu'd function through to the second hidden layer
         out = self.relu(out)
         out = self.l3(out) # runs the relu'd output of the 2nd hidden layer into the output layer
+        out = self.softMax(out)
         return out
 
 
@@ -147,10 +147,10 @@ optimizer = torch.optim.Adam(model.parameters(), lr=learning_rate)
 
 # Train the model
 n_total_steps = len(train_loader)
+print("Begin Training")
+print(n_total_steps)
 for epoch in range(num_epochs):
     for i, (images, labels) in enumerate(train_loader):  
-        # origin shape: [100, 1, 28, 28]
-        # resized: [100, 784]
         images = images.to(device)
         labels = labels.to(device)
         
@@ -163,7 +163,7 @@ for epoch in range(num_epochs):
         loss.backward()
         optimizer.step()
 
-        if (i+1) % 100 == 0:
+        if i % 100 == 0:
             print (f'Epoch [{epoch+1}/{num_epochs}], Step [{i+1}/{n_total_steps}], Loss: {loss.item():.4f}')
 
 
@@ -191,5 +191,8 @@ num = 0
 
 for name, param in model.named_parameters():
     if param.requires_grad:
-        printStr = name + ", " + str(param.data) + "\n"
-        f.write(printStr)
+        nameLine = name + "\n"
+        f.write(nameLine)
+        for data in param.data:
+            f.write(str(data))
+            f.write("\n")
