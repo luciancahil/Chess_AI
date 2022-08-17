@@ -98,7 +98,7 @@ test_dataset = TensorDataset(torch.tensor(testInputs), torch.tensor(testOutputs)
 input_size = 64 # number of squares
 hidden_size = 200 # number of pixels in hidden layer
 num_classes = 230 
-num_epochs = 20 # number of times we go through data
+num_epochs = 5 # number of times we go through data
 batch_size = 100
 learning_rate = 0.001
 
@@ -121,7 +121,6 @@ class NeuralNet(nn.Module):
         self.relu = nn.ReLU() # relu function
         self.l2 = nn.Linear(hidden_size, hidden_size) # connects the first hidden layer to the second
         self.l3 = nn.Linear(hidden_size, num_classes) # connects the second hidden layer to the output layer
-        self.softMax = nn.Softmax()
 
 
     def forward(self, x):
@@ -130,7 +129,6 @@ class NeuralNet(nn.Module):
         out = self.l2(out) # runs relu'd function through to the second hidden layer
         out = self.relu(out)
         out = self.l3(out) # runs the relu'd output of the 2nd hidden layer into the output layer
-        out = self.softMax(out)
         return out
 
 
@@ -196,3 +194,5 @@ for name, param in model.named_parameters():
         for data in param.data:
             f.write(str(data))
             f.write("\n")
+
+torch.save(model.state_dict(), "RandomParam.txt")
