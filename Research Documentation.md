@@ -107,3 +107,7 @@ Where each line is a game, each ply is paired with its label. Ply-label pairs ar
 Consider the following data: <pre>d4;216:d6;220:</pre> This means that the first ply of a game was d4, and the label for the reulting position is 216. Black's first move was d6, and that position has a label of 220. 
 
 Because of the strict time constraints, the exact same position may have slightly different evaluations. This is not necessarily a dealbreaker, but it could potentially cause issues in the training stage.
+
+The network's structure was run with 64 neurons in the input layer, one for each square, 2 hidden layers with 200 neurons each, and 230 neurons in the output layer. A ReLU was run before each hidden layer, and no activation fuction was taken for the output layer.
+
+After running the program for 5 epochs, it was able to achieve an accuracy of 16.2%. Quite lower than hoped, but perhaps still capable of playing decent chess.
