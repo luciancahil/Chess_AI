@@ -1,0 +1,13 @@
+from tokenize import Double
+import numpy as np
+
+test = np.fromstring('1,2', dtype=float, sep=',')
+
+biasesData = open("StockFishWannabe\\Data\\Biases.txt", "r")
+
+biasDataLines = biasesData.readlines()
+
+for biasLine in biasDataLines:
+    labelArrayPair = biasLine.split(":")
+    print(labelArrayPair[0])
+    print(labelArrayPair[1])
